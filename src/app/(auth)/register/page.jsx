@@ -4,7 +4,7 @@ import { createUser } from "@/app/actions/user";
 const Register = () => {
   return (
     <div className="bg-[#323140]/80 h-screen flex items-center justify-center text-white">
-      <div className="bg-[#0A0A14] rounded-lg p-[2rem] 2xl:p-[4rem] w-[28%] 2xl:w-[25%] 2xl:h-[70%]">
+      <div className="bg-[#0A0A14] rounded-lg p-[2rem] 2xl:p-[4rem] w-[25%] 2xl:w-[25%] 2xl:h-[70%]">
         <h1 className="mb-[1.8rem] text-center text-2xl">Register</h1>
         <form action={createUser} className="flex flex-col space-y-[1.8rem]">
           <input

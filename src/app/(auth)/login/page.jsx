@@ -1,13 +1,23 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import { login } from "@/app/actions/user";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    if (login) {
+      router.push("/");
+    }
+  };
+
   return (
     <div className="bg-[#323140]/80 h-screen flex items-center justify-center text-white">
       <div className="bg-[#0A0A14] rounded-xl p-[2rem] 2xl:p-[4rem] w-[23%] 2xl:h-[60%]">
         <h1 className="mb-[1.8rem] text-center text-2xl">Log In</h1>
-        <form action={login} className="flex flex-col space-y-[1.8rem]">
+        <form action={handleLogin} className="flex flex-col space-y-[1.8rem]">
           <input
             type="email"
             className="border-2 border-[#342479] rounded-md p-2 text-sm shadow-md shadow-[#342479]/50"
