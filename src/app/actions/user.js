@@ -35,13 +35,11 @@ export const createUser = async (formdata) => {
   }
 };
 
-export const login = async (formdata) => {
+export const login = async ({ email, password }) => {
   try {
     await connectDB();
 
-    const email = formdata.get("email");
-    const password = formdata.get("password");
-    const cookies = await cookies();
+    const cookieStore = await cookies();
 
     if (!email && !password) return;
 
@@ -51,8 +49,8 @@ export const login = async (formdata) => {
 
     if (user.password !== password) console.log("password salah");
 
-    // buat cookies
-    cookies.set(
+    // create cookie
+    cookieStore.set(
       "session",
       JSON.stringify({
         username: user.username,

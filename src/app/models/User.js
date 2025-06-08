@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
   },
   socketId: String,
+  friends: [String],
 });
 
 module.exports = mongoose.models.users || mongoose.model("users", UserSchema);
