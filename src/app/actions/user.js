@@ -5,24 +5,22 @@ import User from "../models/User";
 import { cookies } from "next/headers";
 import { nanoid } from "nanoid";
 
-export const createUser = async (formdata) => {
+export const createUser = async ({ username, email, password }) => {
   try {
     await connectDB();
 
-    const username = formdata.get("username");
-    const email = formdata.get("email");
-    const password = formdata.get("password");
-
     let unique = false;
     let chatId = "";
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) return;
 
     while (!unique) {
       const existing = await User.findOne({ chatId });
       chatId = nanoid(5);
 
-      if (!existing) {
-        unique = true;
-      }
+      if (!existing) unique = true;
     }
 
     if (!username || !email || !password) return;
@@ -30,6 +28,7 @@ export const createUser = async (formdata) => {
     await User.create({ username, email, password, chatId });
 
     console.log("Berhasil membuat user");
+    return true;
   } catch (error) {
     console.log("Gagal membuat user", error);
   }
@@ -44,6 +43,10 @@ export const login = async ({ email, password }) => {
     if (!email && !password) return;
 
     const user = await User.findOne({ email });
+
+    console.log(email);
+
+    console.log("user login :", user);
 
     if (!user) console.log("tidak ada user");
 
@@ -68,5 +71,16 @@ export const login = async ({ email, password }) => {
     return true;
   } catch (error) {
     console.log("Login gagal", error);
+  }
+};
+
+export const logout = async () => {
+  const cookieStore = await cookies();
+
+  try {
+    cookieStore.delete("session");
+    return true;
+  } catch (error) {
+    console.log(error);
   }
 };

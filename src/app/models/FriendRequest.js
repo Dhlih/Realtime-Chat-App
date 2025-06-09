@@ -3,10 +3,7 @@ const mongoose = require("mongoose");
 const FriendRequestSchema = new mongoose.Schema({
   fromChatId: String, // chat id
   toChatId: String, // chat id
-  isAccepted: {
-    type: Boolean,
-    default: false,
-  },
+  isAccepted: Boolean,
 });
 
 module.exports =

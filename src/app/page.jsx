@@ -1,18 +1,28 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+// icons
 import { RiChatNewLine } from "react-icons/ri";
 import { LuSendHorizontal } from "react-icons/lu";
-import { useEffect, useState } from "react";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { IoMdNotificationsOutline } from "react-icons/io";
+import { PiSignOutFill } from "react-icons/pi";
 
 // components
 import AddFriendForm from "./components/AddFriendForm";
 import FriendList from "./components/FriendList";
+import { logout } from "./actions/user";
+import Notification from "./components/Notification";
+import { searchNotifications } from "./actions/chat";
 
 export default function Home() {
   const [session, setSession] = useState();
   const [isAddFriend, setIsAddFriend] = useState(false);
+  const [isShowNotif, setIsShowNotif] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -38,6 +48,26 @@ export default function Home() {
     setIsAddFriend(!isAddFriend);
   };
 
+  const handleLogout = async () => {
+    const isSuccess = logout();
+
+    if (isSuccess) router.push("/login");
+  };
+
+  const handleShowNotif = async () => {
+    setIsShowNotif(!isShowNotif);
+    if (isShowNotif) {
+      try {
+        const notifications = await searchNotifications({
+          userChatId: session.chatId,
+        });
+        setNotifications(notifications);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   return (
     <div className="w-full h-screen flex items-center space-x-[1rem] ">
       {/* left side */}
@@ -52,7 +82,11 @@ export default function Home() {
               </span>
               <div className="flex items-center space-x-[0.8rem] text-white mt-1">
                 <span className="text-sm">{session?.chatId}</span>
-                <span title="Copy Id" className="text-sm" onClick={copyId}>
+                <span
+                  title="Copy Id"
+                  className="text-sm cursor-pointer"
+                  onClick={copyId}
+                >
                   <MdOutlineContentCopy />
                 </span>
               </div>
@@ -61,7 +95,7 @@ export default function Home() {
           </div>
 
           <div className="flex items-center space-x-[1.5rem]">
-            <span>
+            <span className="relative" onClick={handleShowNotif}>
               <IoMdNotificationsOutline
                 title="Notification"
                 className="cursor-pointer text text-xl"
@@ -82,6 +116,7 @@ export default function Home() {
           className="bg-[#0a0a14] rounded-full py-2 px-4 text-white text-sm outline-none w-full"
           placeholder="Search..."
         />
+
         {/* friend list */}
         <div className="space-y-[1.2rem] overflow-y-scroll max-h-[calc(100vh-150px)]">
           <FriendList />
@@ -90,9 +125,22 @@ export default function Home() {
 
       {/* right side */}
       <div className="h-screen w-[70%] flex flex-col p-4">
-        <div className="flex items-center space-x-[0.8rem] rounded-md">
-          <div className="rounded-full w-8 h-8 bg-yellow-100"></div>
-          <span className="text-white">Ifad Yusuf</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-[0.8rem] rounded-md">
+            <div className="rounded-full w-8 h-8 bg-yellow-100"></div>
+            <span className="text-white">Ifad Yusuf</span>
+          </div>
+
+          {/* sign out button */}
+          <div>
+            <button
+              className="bg-[#9A85FB] p-3  rounded-lg flex items-center space-x-[0.5rem] cursor-pointer "
+              onClick={handleLogout}
+              title="Log Out"
+            >
+              <PiSignOutFill />
+            </button>
+          </div>
         </div>
 
         {/* message input */}
@@ -113,6 +161,8 @@ export default function Home() {
           <AddFriendForm setIsAddFriend={setIsAddFriend} session={session} />
         </div>
       )}
+
+      {isShowNotif && <Notification notifications={notifications} />}
     </div>
   );
 }
